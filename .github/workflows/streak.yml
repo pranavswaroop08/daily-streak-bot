@@ -1,0 +1,27 @@
+name: Continuous Daily Streak Bot
+
+on:
+  schedule:
+    # Runs at 12:00 UTC (5:30 PM IST) every single day
+    - cron: '0 12 * * *'
+  workflow_dispatch: # Allows you to also trigger it manually via the Actions tab
+
+jobs:
+  commit:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    - name: Make Daily Update
+      run: |
+        # Update a log file with the current date and time
+        echo "Streak active: $(date)" >> streak_log.txt
+
+    - name: Commit and Push Changes
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action Bot"
+        git add streak_log.txt
+        git commit -m "chore: automated daily streak update $(date +'%Y-%m-%d')"
+        git push
